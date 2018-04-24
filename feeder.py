@@ -1,6 +1,6 @@
 
+from random import random
 from math import *
-import numpy as np
 
 
 xs = []
@@ -13,16 +13,28 @@ with open("ys", 'r') as fp:
     ys = fp.read().split('\n')
 ys = list(map(float, ys))
 
-X_SHAPE = (1)
-Y_SHAPE = (1)
+BATCH_SIZE = 10
+X_SHAPE = (BATCH_SIZE,)
+Y_SHAPE = (BATCH_SIZE,)
 
 def get_shapes():
     return X_SHAPE, Y_SHAPE
 
 def get_feeder():
     n = len(xs)
-    for i in range(n // 2):
-        yield np.array([xs[i % n]]), np.array([ys[i % n]])
+    i = 0
+    xds = None
+    yds = None
+    while True:
+        xds, yds = [], []
+        for batch in range(BATCH_SIZE):
+            idx = (i + batch) % n
+            xds.append(xs[idx])
+            yds.append(ys[idx])
+        yield xds, yds
+        i += BATCH_SIZE
 
 def get_realcalc(x):
-    return 3.2414484 * x + 0.12445646
+    w = random() * 0.4 + 8.32
+    b = random() * 0.3 + 2.1
+    return w * x + b
